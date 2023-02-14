@@ -4,8 +4,8 @@ from tkinter import Tk, BOTH, Canvas
 class Window:
     def __init__(self, width, height):
         self.root_widget = Tk()
-        self.root_widget.title = "Maze"
-        self.canva = Canvas(self.root_widget)
+        self.root_widget.title("Maze")
+        self.canva = Canvas(self.root_widget, height = 600, width = 800)
         self.canva.pack()
         self.running = False
         self.root_widget.protocol("WM_DELETE_WINDOW", self.close)
