@@ -2,10 +2,10 @@
 from tkinter import Tk, BOTH, Canvas
 
 class Window:
-    def __init__(self, width, height):
+    def __init__(self, width_, height_):
         self.root_widget = Tk()
         self.root_widget.title("Maze")
-        self.canva = Canvas(self.root_widget, height = 600, width = 800)
+        self.canva = Canvas(self.root_widget, height = height_, width = width_)
         self.canva.pack()
         self.running = False
         self.root_widget.protocol("WM_DELETE_WINDOW", self.close)
