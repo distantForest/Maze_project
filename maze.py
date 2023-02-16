@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+#widow class
 from tkinter import Tk, BOTH, Canvas
 
 class Window:
