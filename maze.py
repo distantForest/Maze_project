@@ -19,6 +19,8 @@ class Window:
         self.running = True
         while self.running == True:
             self.redraw()
+        self.canva.destroy()
+        self.root_widget.destroy()
 
     def close(self):
         self.running = False
