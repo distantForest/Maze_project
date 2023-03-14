@@ -16,7 +16,7 @@ class Window:
     def redraw(self):
         self.root_widget.update_idletasks()
         self.root_widget.update()
-       
+      
     def draw_line(self, line, fill_color="black"):
         line.draw(self.canva, fill_color)
 
@@ -30,13 +30,13 @@ class Window:
     def close(self):
         self.running = False
 
-        
+       
 class Point:
     def __init__(self, x=0, y=0):
         self.x = x
         self.y = y
 
-        
+       
 class Line:
     def __init__(self, point_1p=Point(0, 0), point_2p=Point(0, 0)):
         self.point_1 = Point(point_1p.x, point_1p.y)
@@ -53,9 +53,9 @@ class Line:
             )
         canva.pack()
 
-        
+       
 def main():
-   
+  
     win = Window(800, 600)
     line_1 = Line(Point(10, 10), Point(20, 100))
     line_2 = Line(Point(20, 20), Point(800 - 20, 600 - 20))
@@ -64,5 +64,5 @@ def main():
 
     win.wait_for_close()
 
-    
+   
 main()
