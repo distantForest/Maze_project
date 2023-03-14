@@ -54,6 +54,34 @@ class Line:
         canva.pack()
 
         
+class Cell:
+    def __init__(self,
+                 _win_p,
+                  b_c = Point(0, 0), e_c = Point(0, 0),
+                 walls_p = namedtuple("Walls", ['left', 'top', 'right', 'bottom'] ,defaults = "True, True, True, True"),
+                 # has_left_wall_p = True,
+                 # has_right_wall_p = True,
+                 # has_top_wall_p = True,
+                 # has_bottom_wall_p = True,
+                 # _x1_p = 0, _x2_p = 0, _y1_p = 0, _y2_p = 0
+                 ):
+        self.walls = walls_p
+        has_left_wall = has_left_wall_p
+        has_right_wall = has_right_wall_p
+        has_top_wall = has_top_wall_p
+        has_bottom_wall = has_bottom_wall_p
+        _x1_p, _x2_p, _y1_p, _y2 = _x1_p, _x2_p, _y1_p, _y2_p
+    def draw(self,):
+        begin_corner = b_c
+        end_corner = e_c
+        for wall in self.walls
+        self.has_
+
+
+class Point:
+     def __init__(self, x=0, y=0):
+         self.x = x
+
 def main():
    
     win = Window(800, 600)
