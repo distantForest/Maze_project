@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # widow class
 from tkinter import Tk, Canvas
+from collections import namedtuple
 
 
 class Window:
@@ -16,7 +17,7 @@ class Window:
     def redraw(self):
         self.root_widget.update_idletasks()
         self.root_widget.update()
-       
+      
     def draw_line(self, line, fill_color="black"):
         line.draw(self.canva, fill_color)
 
@@ -30,13 +31,13 @@ class Window:
     def close(self):
         self.running = False
 
-        
+       
 class Point:
     def __init__(self, x=0, y=0):
         self.x = x
         self.y = y
 
-        
+       
 class Line:
     def __init__(self, point_1p=Point(0, 0), point_2p=Point(0, 0)):
         self.point_1 = Point(point_1p.x, point_1p.y)
@@ -53,34 +54,35 @@ class Line:
             )
         canva.pack()
 
-        
+     
 class Cell:
     def __init__(self,
                  _win_p,
-                  b_c = Point(0, 0), e_c = Point(0, 0),
-                 walls_p = namedtuple("Walls", ['left', 'top', 'right', 'bottom'] ,defaults = "True, True, True, True"),
-                 # has_left_wall_p = True,
-                 # has_right_wall_p = True,
-                 # has_top_wall_p = True,
-                 # has_bottom_wall_p = True,
-                 # _x1_p = 0, _x2_p = 0, _y1_p = 0, _y2_p = 0
+                 b_c=Point(0, 0), e_c=Point(0, 0),
+                 walls_p=("True", "True", "True", "True")
                  ):
-        self.walls = walls_p
-        has_left_wall = has_left_wall_p
-        has_right_wall = has_right_wall_p
-        has_top_wall = has_top_wall_p
-        has_bottom_wall = has_bottom_wall_p
-        _x1_p, _x2_p, _y1_p, _y2 = _x1_p, _x2_p, _y1_p, _y2_p
-    def draw(self,):
-        begin_corner = b_c
-        end_corner = e_c
-        for wall in self.walls
-        self.has_
-
-
-class Point:
-     def __init__(self, x=0, y=0):
-         self.x = x
+        Walls = namedtuple("Walls", "top right bottom left",
+                                    defaults=["True", "True", "True", "True"]
+                           )
+        self.win = _win_p
+        self.walls = Walls(*walls_p)
+        point_0 = b_c
+        point_1 = Point(e_c.x, b_c.y)
+        point_2 = e_c
+        point_3 = Point(b_c.x, e_c.y)
+        # Create named tuple of lines
+        Lines = namedtuple("Lines", "top right bottom left")
+        self.lines = Lines(left=Line(point_3, point_0),    # left wall
+                           top=Line(point_0, point_1),     # top wall
+                           right=Line(point_1, point_2),   # right wall
+                           bottom=Line(point_2, point_3)   # bottom wall
+                           )
+      
+    def draw(self):
+        for wall, line in zip(self.walls, self.lines):
+            if wall == 'True':
+                line.draw(self.win.canva)
+               
 
 def main():
    
@@ -89,6 +91,10 @@ def main():
     line_2 = Line(Point(20, 20), Point(800 - 20, 600 - 20))
     win.draw_line(line_1, "black")
     win.draw_line(line_2, "red")
+    cell1 = Cell(win, Point(15, 15), Point(45, 45))
+    cell1.draw()
+    cell2 = Cell(win, Point(50, 15), Point(80, 45), ("True", "False", "True", "False"))
+    cell2.draw()
 
     win.wait_for_close()
 
