@@ -69,11 +69,13 @@ class Cell:
         point_1 = Point(e_c.x, b_c.y)
         point_2 = e_c
         point_3 = Point(b_c.x, e_c.y)
+        side = e_c.x - b_c.x
+        self.center = Point(b_c.x + side // 2, b_c.y + side // 2)
         # Create named tuple of lines
         Lines = namedtuple("Lines", "top right bottom left")
-        self.lines = Lines(left=Line(point_3, point_0),    # left wall
-                           top=Line(point_0, point_1),     # top wall
-                           right=Line(point_1, point_2),   # right wall
+        self.lines = Lines(left=Line(point_3, point_0),    # left wall   0 -- 1
+                           top=Line(point_0, point_1),     # top wall    |    |
+                           right=Line(point_1, point_2),   # right wall  3 -- 2
                            bottom=Line(point_2, point_3)   # bottom wall
                            )
       
@@ -81,6 +83,8 @@ class Cell:
         for wall, line in zip(self.walls, self.lines):
             if wall is True:
                 line.draw(self.win.canva)
+        c_line = Line(self.center, Point(self.center.x+10, self.center.y+5))
+        c_line.draw(self.win.canva, "green")
                
 
 def main():
