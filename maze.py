@@ -44,7 +44,6 @@ class Line:
         self.point_2 = Point(point_2p.x, point_2p.y)
 
     def draw(self, canva, fill_p="black"):
-        print(self.point_1.x)
         canva.create_line(
             self.point_1.x,
             self.point_1.y,
@@ -59,10 +58,10 @@ class Cell:
     def __init__(self,
                  _win_p,
                  b_c=Point(0, 0), e_c=Point(0, 0),
-                 walls_p=("True", "True", "True", "True")
+                 walls_p=(True, True, True, True)
                  ):
         Walls = namedtuple("Walls", "top right bottom left",
-                                    defaults=["True", "True", "True", "True"]
+                                    defaults=[True, True, True, True]
                            )
         self.win = _win_p
         self.walls = Walls(*walls_p)
@@ -80,7 +79,7 @@ class Cell:
       
     def draw(self):
         for wall, line in zip(self.walls, self.lines):
-            if wall == 'True':
+            if wall is True:
                 line.draw(self.win.canva)
                
 
@@ -93,7 +92,7 @@ def main():
     win.draw_line(line_2, "red")
     cell1 = Cell(win, Point(15, 15), Point(45, 45))
     cell1.draw()
-    cell2 = Cell(win, Point(50, 15), Point(80, 45), ("True", "False", "True", "False"))
+    cell2 = Cell(win, Point(50, 15), Point(80, 45), (True, False, True, False))
     cell2.draw()
 
     win.wait_for_close()
