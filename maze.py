@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # widow class
 from tkinter import Tk, Canvas
+from collections import namedtuple
 
 
 class Window:
@@ -43,7 +44,6 @@ class Line:
         self.point_2 = Point(point_2p.x, point_2p.y)
 
     def draw(self, canva, fill_p="black"):
-        print(self.point_1.x)
         canva.create_line(
             self.point_1.x,
             self.point_1.y,
@@ -53,7 +53,36 @@ class Line:
             )
         canva.pack()
 
-       
+     
+class Cell:
+    def __init__(self,
+                 _win_p,
+                 b_c=Point(0, 0), e_c=Point(0, 0),
+                 walls_p=(True, True, True, True)
+                 ):
+        Walls = namedtuple("Walls", "top right bottom left",
+                                    defaults=[True, True, True, True]
+                           )
+        self.win = _win_p
+        self.walls = Walls(*walls_p)
+        point_0 = b_c
+        point_1 = Point(e_c.x, b_c.y)
+        point_2 = e_c
+        point_3 = Point(b_c.x, e_c.y)
+        # Create named tuple of lines
+        Lines = namedtuple("Lines", "top right bottom left")
+        self.lines = Lines(left=Line(point_3, point_0),    # left wall
+                           top=Line(point_0, point_1),     # top wall
+                           right=Line(point_1, point_2),   # right wall
+                           bottom=Line(point_2, point_3)   # bottom wall
+                           )
+      
+    def draw(self):
+        for wall, line in zip(self.walls, self.lines):
+            if wall is True:
+                line.draw(self.win.canva)
+               
+
 def main():
   
     win = Window(800, 600)
@@ -61,6 +90,10 @@ def main():
     line_2 = Line(Point(20, 20), Point(800 - 20, 600 - 20))
     win.draw_line(line_1, "black")
     win.draw_line(line_2, "red")
+    cell1 = Cell(win, Point(15, 15), Point(45, 45))
+    cell1.draw()
+    cell2 = Cell(win, Point(50, 15), Point(80, 45), (True, False, True, False))
+    cell2.draw()
 
     win.wait_for_close()
 
