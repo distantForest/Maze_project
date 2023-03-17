@@ -3,6 +3,11 @@
 from tkinter import Tk, Canvas
 from collections import namedtuple
 
+Lines = namedtuple("Lines", "top right bottom left")
+Walls = namedtuple("Walls", "top right bottom left",
+                   defaults=[True, True, True, True]
+                   )
+
 
 class Window:
     def __init__(self, width_, height_):
@@ -58,21 +63,20 @@ class Cell:
     def __init__(self,
                  _win_p,
                  b_c=Point(0, 0), e_c=Point(0, 0),
-                 walls_p=(True, True, True, True)
+                 walls_p=Walls(True, True, True, True)
                  ):
-        Walls = namedtuple("Walls", "top right bottom left",
-                                    defaults=[True, True, True, True]
-                           )
+
         self.win = _win_p
         self.walls = Walls(*walls_p)
         point_0 = b_c
         point_1 = Point(e_c.x, b_c.y)
         point_2 = e_c
         point_3 = Point(b_c.x, e_c.y)
-        side = e_c.x - b_c.x
-        self.center = Point(b_c.x + side // 2, b_c.y + side // 2)
+        side_x = e_c.x - b_c.x
+        side_y = e_c.y - b_c.y
+        self.center = Point(b_c.x + side_x // 2, b_c.y + side_y // 2)
+
         # Create named tuple of lines
-        Lines = namedtuple("Lines", "top right bottom left")
         self.lines = Lines(left=Line(point_3, point_0),    # left wall   0 -- 1
                            top=Line(point_0, point_1),     # top wall    |    |
                            right=Line(point_1, point_2),   # right wall  3 -- 2
@@ -83,10 +87,16 @@ class Cell:
         for wall, line in zip(self.walls, self.lines):
             if wall is True:
                 line.draw(self.win.canva)
-        c_line = Line(self.center, Point(self.center.x+10, self.center.y+5))
+        c_line = Line(Point(self.center.x-5, self.center.y-5),
+                      Point(self.center.x+5, self.center.y+5))
         c_line.draw(self.win.canva, "green")
-               
+        Line(Point(self.center.x-5, self.center.y+5),
+             Point(self.center.x+5, self.center.y-5)).draw(self.win.canva, "green")
 
+    def draw_move(self, to_cell, undo=False):
+        Line(self.center, to_cell.center).draw(self.win.canva, "grey" if undo else "red")
+
+        
 def main():
   
     win = Window(800, 600)
@@ -98,6 +108,13 @@ def main():
     cell1.draw()
     cell2 = Cell(win, Point(50, 15), Point(80, 45), (True, False, True, False))
     cell2.draw()
+    cell3 = Cell(win, Point(15, 150), Point(45, 195))
+    cell3.draw()
+    cell4 = Cell(win, Point(70, 95), Point(110, 135), (True, False, True, False))
+    cell4.draw()
+
+    cell4.draw_move(cell1)
+    cell2.draw_move(cell3,True)
 
     win.wait_for_close()
 
