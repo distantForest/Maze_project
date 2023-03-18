@@ -82,6 +82,7 @@ class Cell:
                            right=Line(point_1, point_2),   # right wall  3 -- 2
                            bottom=Line(point_2, point_3)   # bottom wall
                            )
+        return #self
       
     def draw(self):
         for wall, line in zip(self.walls, self.lines):
@@ -96,7 +97,46 @@ class Cell:
     def draw_move(self, to_cell, undo=False):
         Line(self.center, to_cell.center).draw(self.win.canva, "grey" if undo else "red")
 
-        
+
+class Maze:
+    def __init__(
+            self,
+            x1,
+            y1,
+            num_rows,
+            num_cols,
+            cell_size_x,
+            cell_size_y,
+            win
+            ):
+        self._x = x1
+        self._y = y1
+        self._rows = num_rows
+        self._colls = num_cols
+        self._cell_size_x = cell_size_x
+        self._cell_size_y = cell_size_y
+        self._win = win
+        self._cells = [[True for i in range(self._colls)] for j in range(self._rows)]
+        self._create_cells()
+
+    def _create_cells(self):
+        for i in range(self._colls):
+            for j in range(self._rows):
+                b_c = Point(self._x+self._cell_size_x*i,
+                            self._y+self._cell_size_y*j
+                            )
+                e_c = Point(self._x+self._cell_size_x*(i+1),
+                            self._y+self._cell_size_y*(j+1)
+                            )
+                self._cells[i][j] = Cell(self._win, b_c, e_c)
+                self._draw_cell(i, j)
+        return
+
+    def _draw_cell(self, Coll, Row):
+        self._cells[Coll][Row].draw()
+        return
+    
+               
 def main():
   
     win = Window(800, 600)
@@ -116,6 +156,7 @@ def main():
     cell4.draw_move(cell1)
     cell2.draw_move(cell3,True)
 
+    a  = Maze(1, 1, 10, 10, 24, 24, win)
     win.wait_for_close()
 
    
