@@ -136,6 +136,9 @@ class Maze:
                 self._animate()
         return
 
+    def _create_entrance_and_exit(self):
+        self._cells[0][0].walls = (False, False, False, False)
+
     def _draw_cell(self, Coll, Row):
         self._cells[Coll][Row].draw()
         return
