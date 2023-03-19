@@ -62,7 +62,7 @@ class Line:
      
 class Cell:
     def __init__(self,
-                 _win_p,
+                 _win_p=None,
                  b_c=Point(0, 0), e_c=Point(0, 0),
                  walls_p=Walls(True, True, True, True)
                  ):
@@ -108,7 +108,7 @@ class Maze:
             num_cols,
             cell_size_x,
             cell_size_y,
-            win
+            win=None
             ):
         self._x = x1
         self._y = y1
