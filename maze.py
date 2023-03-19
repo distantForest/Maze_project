@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # widow class
+import time
 from tkinter import Tk, Canvas
 from collections import namedtuple
 
@@ -82,7 +83,7 @@ class Cell:
                            right=Line(point_1, point_2),   # right wall  3 -- 2
                            bottom=Line(point_2, point_3)   # bottom wall
                            )
-        return #self
+        return
       
     def draw(self):
         for wall, line in zip(self.walls, self.lines):
@@ -130,11 +131,16 @@ class Maze:
                             )
                 self._cells[i][j] = Cell(self._win, b_c, e_c)
                 self._draw_cell(i, j)
+                self._animate()
         return
 
     def _draw_cell(self, Coll, Row):
         self._cells[Coll][Row].draw()
         return
+
+    def _animate(self):
+        self._win.redraw()
+        time.sleep(0.1)
     
                
 def main():
