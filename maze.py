@@ -89,8 +89,9 @@ class Cell:
       
     def draw(self):
         for wall, line in zip(self.walls, self.lines):
-            if wall is True:
-                line.draw()
+            line.draw(fill_p="black" if wall is True else "gray")
+            # if wall is True:
+            #     line.draw()
         c_line = Line(Point(self.center.x-5, self.center.y-5),
                       Point(self.center.x+5, self.center.y+5), self.win)
         c_line.draw("green")
@@ -137,7 +138,11 @@ class Maze:
         return
 
     def _create_entrance_and_exit(self):
+        r, c = self._rows-1, self._colls-1
         self._cells[0][0].walls = (False, False, False, False)
+        self._draw_cell(0, 0)
+        self._cells[c][r].walls = (False, False, False, False)
+        self._draw_cell(c, r)
 
     def _draw_cell(self, Coll, Row):
         self._cells[Coll][Row].draw()
@@ -146,7 +151,7 @@ class Maze:
     def _animate(self):
         if self._win is not None:
             self._win.redraw()
-            time.sleep(0.1)
+            time.sleep(0.05)
     
                
 if __name__ == "__main__":
@@ -169,7 +174,9 @@ if __name__ == "__main__":
         cell4.draw_move(cell1)
         cell2.draw_move(cell3,True)
 
-        a  = Maze(1, 1, 10, 15, 24, 24, win)
+        a = Maze(100, 1, 10, 15, 24, 24, win)
+        a._create_entrance_and_exit()
+        
         win.wait_for_close()
 
    
