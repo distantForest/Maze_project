@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # widow class
 import time
+import random
 from tkinter import Tk, Canvas
 from collections import namedtuple
 
@@ -78,6 +79,7 @@ class Cell:
         side_x = e_c.x - b_c.x
         side_y = e_c.y - b_c.y
         self.center = Point(b_c.x + side_x // 2, b_c.y + side_y // 2)
+        self.visited = False
 
         # Create named tuple of lines
         self.lines = Lines(left=Line(point_3, point_0, self.win),    # left wall   0 -- 1
@@ -113,6 +115,7 @@ class Maze:
             cell_size_y,
             win=None
             ):
+        random.seed(1)
         self._x = x1
         self._y = y1
         self._rows = num_rows
@@ -122,6 +125,7 @@ class Maze:
         self._win = win
         self._cells = [[True for i in range(self._rows)] for j in range(self._colls)]
         self._create_cells()
+        
 
     def _create_cells(self):
         for i in range(self._colls):
@@ -143,6 +147,31 @@ class Maze:
         self._draw_cell(0, 0)
         self._cells[c][r].walls = (False, False, False, False)
         self._draw_cell(c, r)
+
+    def _break_walls_r(self, I_p, J_p):
+        I, J = I_p, J_p
+        the_cell = self._cells[I][J]
+        the_cell.visited = True
+        
+        for i in range(I, self._colls):
+            for j in range(J, self._rows):
+                if self._cells[i][j].visited:
+                    continue
+                cells_to_visit = list()
+                # cells to visit
+                if (j > 0) and not self._cells[i][j-1].visited:
+                    cells_to_visit.append(self._cells[i][j-1])
+                if (i > 0) and not self._cells[i-1][j].visited:
+                    cells_to_visit.append(self._cells[i-1][j])
+                if (j < (self._cell_size_y - 1)) and not self._cells[i][j+1].visited:
+                    cells_to_visit.append(self._cells[i][j+1])
+                if (i < (self._cell_size_x - 1)) and not self._cells[i+1][j].visited:
+                    cells_to_visit.append(self._cells[i+1][j])
+                # check our pssibilities to move
+                if len(cells_to_visit) == 0:
+                    # this is a dead end
+                    self._draw_cell(i, j)
+                    continue
 
     def _draw_cell(self, Coll, Row):
         self._cells[Coll][Row].draw()
@@ -181,3 +210,5 @@ if __name__ == "__main__":
 
    
     main()
+
+    
