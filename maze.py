@@ -126,7 +126,6 @@ class Maze:
         self._cells = [[True for i in range(self._rows)] for j in range(self._colls)]
         self._create_cells()
         
-
     def _create_cells(self):
         for i in range(self._colls):
             for j in range(self._rows):
@@ -149,30 +148,28 @@ class Maze:
         self._draw_cell(c, r)
 
     def _break_walls_r(self, I_p, J_p):
-        I, J = I_p, J_p
-        the_cell = self._cells[I][J]
-        the_cell.visited = True
+        i, j = I_p, J_p
+        the_cell = self._cells[i][j]
         
-        for i in range(I, self._colls):
-            for j in range(J, self._rows):
-                if self._cells[i][j].visited:
-                    continue
-                cells_to_visit = list()
-                # cells to visit
-                if (j > 0) and not self._cells[i][j-1].visited:
-                    cells_to_visit.append(self._cells[i][j-1])
-                if (i > 0) and not self._cells[i-1][j].visited:
-                    cells_to_visit.append(self._cells[i-1][j])
-                if (j < (self._cell_size_y - 1)) and not self._cells[i][j+1].visited:
-                    cells_to_visit.append(self._cells[i][j+1])
-                if (i < (self._cell_size_x - 1)) and not self._cells[i+1][j].visited:
-                    cells_to_visit.append(self._cells[i+1][j])
-                # check our pssibilities to move
-                if len(cells_to_visit) == 0:
-                    # this is a dead end
-                    self._draw_cell(i, j)
-                    continue
+        while True:
+            cells_to_visit = list()
+            # cells to visit
+            if (j > 0) and not self._cells[i][j-1].visited:
+                cells_to_visit.append(self._cells[i][j-1])
+            if (i > 0) and not self._cells[i-1][j].visited:
+                cells_to_visit.append(self._cells[i-1][j])
+            if (j < (self._cell_size_y - 1)) and not self._cells[i][j+1].visited:
+                cells_to_visit.append(self._cells[i][j+1])
+            if (i < (self._cell_size_x - 1)) and not self._cells[i+1][j].visited:
+                cells_to_visit.append(self._cells[i+1][j])
+            # check our pssibilities to move
+            if len(cells_to_visit) == 0:
+                # this is a dead end
+                self._draw_cell(i, j)
+                break
 
+        the_cell.visited = True
+             
     def _draw_cell(self, Coll, Row):
         self._cells[Coll][Row].draw()
         return
