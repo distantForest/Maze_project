@@ -4,11 +4,29 @@ import time
 import random
 from tkinter import Tk, Canvas
 from collections import namedtuple
+from enum import Enum
 
 Lines = namedtuple("Lines", "top right bottom left")
 Walls = namedtuple("Walls", "top right bottom left",
                    defaults=[True, True, True, True]
                    )
+
+
+class Direction(Enum):
+    UP = 0
+    RIGHT = 1
+    DOWN = 2
+    LEFT = 3
+    
+    def opp_dir(self):
+        if self == Direction.UP:
+            return Direction.DOWN
+        elif self == Direction.RIGHT:
+            return Direction.LEFT
+        elif self == Direction.DOWN:
+            return Direction.UP
+        else:
+            return Direction.RIGHT
 
 
 class Window:
@@ -94,11 +112,12 @@ class Cell:
             line.draw(fill_p="black" if wall is True else "gray")
             # if wall is True:
             #     line.draw()
+        c_line_color = "green" if not self.visited else "yellow"
         c_line = Line(Point(self.center.x-5, self.center.y-5),
                       Point(self.center.x+5, self.center.y+5), self.win)
-        c_line.draw("green")
+        c_line.draw(c_line_color)
         Line(Point(self.center.x-5, self.center.y+5),
-             Point(self.center.x+5, self.center.y-5), self.win).draw("green")
+             Point(self.center.x+5, self.center.y-5), self.win).draw(c_line_color)
 
     def draw_move(self, to_cell, undo=False):
         Line(self.center, to_cell.center, self.win).draw("grey" if undo else "red")
@@ -153,22 +172,43 @@ class Maze:
         
         while True:
             cells_to_visit = list()
+            the_cell.visited = True
             # cells to visit
             if (j > 0) and not self._cells[i][j-1].visited:
-                cells_to_visit.append(self._cells[i][j-1])
+                cells_to_visit.append((self._cells[i][j-1], Direction.UP, i, j-1))
             if (i > 0) and not self._cells[i-1][j].visited:
-                cells_to_visit.append(self._cells[i-1][j])
-            if (j < (self._cell_size_y - 1)) and not self._cells[i][j+1].visited:
-                cells_to_visit.append(self._cells[i][j+1])
-            if (i < (self._cell_size_x - 1)) and not self._cells[i+1][j].visited:
-                cells_to_visit.append(self._cells[i+1][j])
+                cells_to_visit.append((self._cells[i-1][j], Direction.LEFT, i-1, j))
+            if (j < (self._rows - 1)):
+                if not self._cells[i][j+1].visited:
+                    cells_to_visit.append((self._cells[i][j+1], Direction.DOWN, i, j+1))
+            if (i < (self._colls - 1)):
+                if not self._cells[i+1][j].visited:
+                    cells_to_visit.append((self._cells[i+1][j], Direction.RIGHT, i+1, j))
+                
             # check our pssibilities to move
             if len(cells_to_visit) == 0:
                 # this is a dead end
                 self._draw_cell(i, j)
                 break
+            
+            # choose cell to move to
+            cell_move_to, direction_move_to, i_r, j_r = random.choice(cells_to_visit)
+            walls = list(the_cell.walls)
+            walls[direction_move_to.value] = False
+            the_cell.walls = Walls(*walls)
+            the_cell.draw()
+            
+            # knock down the walls between cells 
+            walls = list(cell_move_to.walls)
+            print(walls, direction_move_to, i_r, j_r)
+            walls[direction_move_to.opp_dir().value] = False
+            cell_move_to.walls = Walls(*walls)
+            cell_move_to.draw()
+            self._animate()
 
-        the_cell.visited = True
+            # dive into 
+            self._break_walls_r(i_r, j_r)
+            continue
              
     def _draw_cell(self, Coll, Row):
         self._cells[Coll][Row].draw()
@@ -202,10 +242,9 @@ if __name__ == "__main__":
 
         a = Maze(100, 1, 10, 15, 24, 24, win)
         a._create_entrance_and_exit()
+        a._break_walls_r(1, 1)
         
         win.wait_for_close()
 
-   
-    main()
-
+        main()
     
