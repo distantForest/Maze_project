@@ -246,5 +246,5 @@ if __name__ == "__main__":
         
         win.wait_for_close()
 
-        main()
+    main()
     
