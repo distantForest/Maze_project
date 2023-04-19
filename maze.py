@@ -218,6 +218,12 @@ class Maze:
         if self._win is not None:
             self._win.redraw()
             time.sleep(0.05)
+
+    def _reset_cells_visited(self):
+        for c in self._cells:
+            for x in c:
+                x.visited = False
+            
     
                
 if __name__ == "__main__":
@@ -243,6 +249,12 @@ if __name__ == "__main__":
         a = Maze(100, 1, 10, 15, 24, 24, win)
         a._create_entrance_and_exit()
         a._break_walls_r(1, 1)
+
+        a._reset_cells_visited()
+        for c in a._cells:
+            for x in c:
+                x.draw()
+                a._animate()
         
         win.wait_for_close()
 
