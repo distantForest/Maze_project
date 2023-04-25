@@ -4,7 +4,7 @@ import time
 import random
 from tkinter import Tk, Canvas
 from collections import namedtuple
-from enum import Enum
+from enum import Enum, IntEnum
 
 Lines = namedtuple("Lines", "top right bottom left")
 Walls = namedtuple("Walls", "top right bottom left",
@@ -12,22 +12,23 @@ Walls = namedtuple("Walls", "top right bottom left",
                    )
 
 
-class Direction(Enum):
+class Direction(IntEnum):
     UP = 0
     RIGHT = 1
     DOWN = 2
     LEFT = 3
     
     def opp_dir(self):
-        if self == Direction.UP:
-            return Direction.DOWN
-        elif self == Direction.RIGHT:
-            return Direction.LEFT
-        elif self == Direction.DOWN:
-            return Direction.UP
-        else:
-            return Direction.RIGHT
-
+        # if self == Direction.UP:
+        #     return Direction.DOWN
+        # elif self == Direction.RIGHT:
+        #     return Direction.LEFT
+        # elif self == Direction.DOWN:
+        #     return Direction.UP
+        # else:
+        #     return Direction.RIGHT
+        return Direction((self.value+2) % 4)
+    
 
 class Window:
     def __init__(self, width_, height_):
@@ -144,6 +145,9 @@ class Maze:
         self._win = win
         self._cells = [[True for i in range(self._rows)] for j in range(self._colls)]
         self._create_cells()
+        self._create_entrance_and_exit()
+        self._break_walls_r(0, 0)
+        self._reset_cells_visited()
         
     def _create_cells(self):
         for i in range(self._colls):
@@ -161,9 +165,9 @@ class Maze:
 
     def _create_entrance_and_exit(self):
         r, c = self._rows-1, self._colls-1
-        self._cells[0][0].walls = (False, False, False, False)
+        self._cells[0][0].walls = (False, True, True, False)
         self._draw_cell(0, 0)
-        self._cells[c][r].walls = (False, False, False, False)
+        self._cells[c][r].walls = (True, False, False, True)
         self._draw_cell(c, r)
 
     def _break_walls_r(self, I_p, J_p):
@@ -223,6 +227,8 @@ class Maze:
         for c in self._cells:
             for x in c:
                 x.visited = False
+                x.draw()
+                self._animate()
             
     
                
@@ -247,14 +253,14 @@ if __name__ == "__main__":
         cell2.draw_move(cell3,True)
 
         a = Maze(100, 1, 10, 15, 24, 24, win)
-        a._create_entrance_and_exit()
-        a._break_walls_r(1, 1)
+        # a._create_entrance_and_exit()
+        # a._break_walls_r(1, 1)
 
-        a._reset_cells_visited()
-        for c in a._cells:
-            for x in c:
-                x.draw()
-                a._animate()
+        # a._reset_cells_visited()
+        # for c in a._cells:
+        #     for x in c:
+        #         x.draw()
+        #         a._animate()
         
         win.wait_for_close()
 
