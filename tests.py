@@ -15,6 +15,17 @@ class Tests(unittest.TestCase):
             len(m1._cells[0]),
             num_rows,
             )
+        visited = True
+        for i in range(num_cols):
+            for j in range(num_rows):
+                visited = visited and m1._cells[i][j].visited
+                if not visited:
+                    break
+        self.assertEqual(
+            False,
+            visited,
+            "There are some cells visited"
+            )
 
         
 if __name__ == "__main__":
