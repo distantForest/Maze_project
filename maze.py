@@ -150,17 +150,24 @@ class Maze:
         self._reset_cells_visited()
         
     def _create_cells(self):
+        delta_x = self._cell_size_x + 3
+        delta_y = self._cell_size_y + 3
+        b_c_x = self._x
+        e_c_x = b_c_x + self._cell_size_x
         for i in range(self._colls):
+            b_c_y = self._y
+            e_c_y = b_c_y + self._cell_size_y
             for j in range(self._rows):
-                b_c = Point(self._x+self._cell_size_x*i,
-                            self._y+self._cell_size_y*j
-                            )
-                e_c = Point(self._x+self._cell_size_x*(i+1),
-                            self._y+self._cell_size_y*(j+1)
-                            )
+                b_c = Point(b_c_x, b_c_y)
+                e_c = Point(e_c_x, e_c_y)
                 self._cells[i][j] = Cell(self._win, b_c, e_c)
                 self._draw_cell(i, j)
                 self._animate()
+                b_c_y += delta_y
+                e_c_y += delta_y
+                
+            b_c_x += delta_x
+            e_c_x += delta_x
         return
 
     def _create_entrance_and_exit(self):
