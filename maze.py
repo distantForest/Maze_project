@@ -250,6 +250,8 @@ class Maze:
         if (x == colls - 1) and (y == rows - 1):
             return True
         dx, dy = Fraction(colls, (x + 1)), Fraction(rows, (y + 1))
+        
+        # the magnet
         if dx >= dy:
             move_direction = Direction.RIGHT
             rotate = 1
