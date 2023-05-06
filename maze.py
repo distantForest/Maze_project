@@ -29,7 +29,6 @@ class Direction(IntEnum):
         dd = [0, -1], [1, 0], [0, 1], [-1, 0]
         return dd[self.value]
    
-# def move_index(x, y, dir):
     
 class Window:
     def __init__(self, width_, height_):
@@ -112,8 +111,8 @@ class Cell:
     def draw(self):
         for wall, line in zip(self.walls, self.lines):
             line.draw(fill_p="black" if wall is True else "gray")
-            # if wall is True:
-            #     line.draw()
+            
+        # mark cell center
         c_line_color = "green" if not self.visited else "yellow"
         c_line = Line(Point(self.center.x-5, self.center.y-5),
                       Point(self.center.x+5, self.center.y+5), self.win)
@@ -205,14 +204,15 @@ class Maze:
             
             # choose cell to move to
             cell_move_to, direction_move_to, i_r, j_r = random.choice(cells_to_visit)
+            
+            # knock down the wall in the current cell
             walls = list(the_cell.walls)
             walls[direction_move_to.value] = False
             the_cell.walls = Walls(*walls)
             the_cell.draw()
             
-            # knock down the walls between cells
+            # knock down the wall between in the target cell
             walls = list(cell_move_to.walls)
-            print(walls, direction_move_to, i_r, j_r)
             walls[direction_move_to.opp_dir().value] = False
             cell_move_to.walls = Walls(*walls)
             cell_move_to.draw()
@@ -261,10 +261,9 @@ class Maze:
 
         for m in range(4):
             x_m = x + move_direction.deltas()[0]
-            if x_m in range(self._colls):
+            if x_m in range(colls):
                 y_m = y + move_direction.deltas()[1]
-                if y_m in range(self._rows):
-                    print(f'+m {m}+x={x} y={y} {dx} {dy} - move-{move_direction} {x_m},{y_m} ')            
+                if y_m in range(rows):
                     move_to_cell = self._cells[x_m][y_m]
                     walls_exist = (current_cell.walls[move_direction]
                                    or move_to_cell.walls[move_direction.opp_dir()]
@@ -286,34 +285,11 @@ if __name__ == "__main__":
     def main():
     
         win = Window(800, 600)
-        # line_1 = Line(Point(10, 10), Point(20, 100), win)
-        # line_2 = Line(Point(20, 20), Point(800 - 20, 600 - 20), win)
-        # win.draw_line(line_1, "black")
-        # win.draw_line(line_2, "red")
-        # cell1 = Cell(win, Point(15, 15), Point(45, 45))
-        # cell1.draw()
-        # cell2 = Cell(win, Point(50, 15), Point(80, 45), (True, False, True, False))
-        # cell2.draw()
-        # cell3 = Cell(win, Point(15, 150), Point(45, 195))
-        # cell3.draw()
-        # cell4 = Cell(win, Point(70, 95), Point(110, 135), (True, False, True, False))
-        # cell4.draw()
-        
-        # cell4.draw_move(cell1)
-        # cell2.draw_move(cell3,True)
-
         a = Maze(100, 1, 10, 15, 24, 24, win)
-        # a._create_entrance_and_exit()
-        # a._break_walls_r(1, 1)
-
-        # a._reset_cells_visited()
-        # for c in a._cells:
-        #     for x in c:
-        #         x.draw()
-        #         a._animate()
         a.solve()
         
         win.wait_for_close()
+
 
     main()
     
