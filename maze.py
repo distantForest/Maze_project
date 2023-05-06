@@ -5,6 +5,7 @@ import random
 from tkinter import Tk, Canvas
 from collections import namedtuple
 from enum import Enum, IntEnum
+from fractions import Fraction
 
 Lines = namedtuple("Lines", "top right bottom left")
 Walls = namedtuple("Walls", "top right bottom left",
@@ -17,19 +18,19 @@ class Direction(IntEnum):
     RIGHT = 1
     DOWN = 2
     LEFT = 3
-    
-    def opp_dir(self):
-        # if self == Direction.UP:
-        #     return Direction.DOWN
-        # elif self == Direction.RIGHT:
-        #     return Direction.LEFT
-        # elif self == Direction.DOWN:
-        #     return Direction.UP
-        # else:
-        #     return Direction.RIGHT
-        return Direction((self.value+2) % 4)
-    
 
+    def opp_dir(self):
+         return Direction((self.value+2) % 4)
+
+    def rotate(self, step):
+        return Direction((self.value+step) % 4)
+
+    def deltas(self):
+        dd = [0, -1], [1, 0], [0, 1], [-1, 0]
+        return dd[self.value]
+   
+# def move_index(x, y, dir):
+    
 class Window:
     def __init__(self, width_, height_):
         self.root_widget = Tk()
@@ -135,7 +136,7 @@ class Maze:
             cell_size_y,
             win=None
             ):
-        random.seed(1)
+        random.seed(7)
         self._x = x1
         self._y = y1
         self._rows = num_rows
@@ -209,7 +210,7 @@ class Maze:
             the_cell.walls = Walls(*walls)
             the_cell.draw()
             
-            # knock down the walls between cells 
+            # knock down the walls between cells
             walls = list(cell_move_to.walls)
             print(walls, direction_move_to, i_r, j_r)
             walls[direction_move_to.opp_dir().value] = False
@@ -217,7 +218,7 @@ class Maze:
             cell_move_to.draw()
             self._animate()
 
-            # dive into 
+            # dive into
             self._break_walls_r(i_r, j_r)
             continue
              
@@ -236,28 +237,68 @@ class Maze:
                 x.visited = False
                 x.draw()
                 self._animate()
+
+    def solve(self):
+        return self._solve_r(0, 0)
+
+    def _solve_r(self, I_r, J_r):
+        x, y = I_r, J_r
+        colls, rows = self._colls, self._rows
+        current_cell = self._cells[x][y]
+        self._animate()
+        current_cell.visited = True
+        if (x == colls - 1) and (y == rows - 1):
+            return True
+        dx, dy = Fraction(colls, (x + 1)), Fraction(rows, (y + 1))
+        if dx >= dy:
+            move_direction = Direction.RIGHT
+            rotate = 1
+        else:
+            move_direction = Direction.DOWN
+            rotate = -1
+
+        for m in range(4):
+            x_m = x + move_direction.deltas()[0]
+            if x_m in range(self._colls):
+                y_m = y + move_direction.deltas()[1]
+                if y_m in range(self._rows):
+                    print(f'+m {m}+x={x} y={y} {dx} {dy} - move-{move_direction} {x_m},{y_m} ')            
+                    move_to_cell = self._cells[x_m][y_m]
+                    walls_exist = (current_cell.walls[move_direction]
+                                   or move_to_cell.walls[move_direction.opp_dir()]
+                                   or move_to_cell.visited
+                                   )
+
+                    if not walls_exist:
+                        current_cell.draw_move(move_to_cell)
+                        if self._solve_r(x_m, y_m):
+                            return True
+                        else:
+                            current_cell.draw_move(move_to_cell, True)
+            move_direction = move_direction.rotate(rotate)
             
+        return False
     
                
 if __name__ == "__main__":
     def main():
     
         win = Window(800, 600)
-        line_1 = Line(Point(10, 10), Point(20, 100), win)
-        line_2 = Line(Point(20, 20), Point(800 - 20, 600 - 20), win)
-        win.draw_line(line_1, "black")
-        win.draw_line(line_2, "red")
-        cell1 = Cell(win, Point(15, 15), Point(45, 45))
-        cell1.draw()
-        cell2 = Cell(win, Point(50, 15), Point(80, 45), (True, False, True, False))
-        cell2.draw()
-        cell3 = Cell(win, Point(15, 150), Point(45, 195))
-        cell3.draw()
-        cell4 = Cell(win, Point(70, 95), Point(110, 135), (True, False, True, False))
-        cell4.draw()
+        # line_1 = Line(Point(10, 10), Point(20, 100), win)
+        # line_2 = Line(Point(20, 20), Point(800 - 20, 600 - 20), win)
+        # win.draw_line(line_1, "black")
+        # win.draw_line(line_2, "red")
+        # cell1 = Cell(win, Point(15, 15), Point(45, 45))
+        # cell1.draw()
+        # cell2 = Cell(win, Point(50, 15), Point(80, 45), (True, False, True, False))
+        # cell2.draw()
+        # cell3 = Cell(win, Point(15, 150), Point(45, 195))
+        # cell3.draw()
+        # cell4 = Cell(win, Point(70, 95), Point(110, 135), (True, False, True, False))
+        # cell4.draw()
         
-        cell4.draw_move(cell1)
-        cell2.draw_move(cell3,True)
+        # cell4.draw_move(cell1)
+        # cell2.draw_move(cell3,True)
 
         a = Maze(100, 1, 10, 15, 24, 24, win)
         # a._create_entrance_and_exit()
@@ -268,6 +309,7 @@ if __name__ == "__main__":
         #     for x in c:
         #         x.draw()
         #         a._animate()
+        a.solve()
         
         win.wait_for_close()
 
